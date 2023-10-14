@@ -24,7 +24,7 @@ PROMPT_DICT = {
 }
 
 class InstructionDataset(Dataset):
-    def __init__(self, dataset_config, tokenizer, partition="train", max_words=1024):
+    def __init__(self, dataset_config, tokenizer, partition="train", max_words=30):
         self.ann = json.load(open(dataset_config.data_path))
         if partition == "train":
             self.ann = self.ann
@@ -61,7 +61,7 @@ class InstructionDataset(Dataset):
         if padding > 0:
             example = torch.cat((example, torch.zeros(padding, dtype=torch.int64) - 1))
         elif padding < 0:
-            example = example[-self.max_words:]
+            example = example[: self.max_words]
         labels = copy.deepcopy(example)
         labels[: len(prompt)] = -1
         example_mask = example.ge(0)
